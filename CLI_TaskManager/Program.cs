@@ -3,25 +3,59 @@
 using CLI_TaskManager.Models;
 using CLI_TaskManager.Services;
 
-TaskFileStorage taskFileStorage = new TaskFileStorage("tasks.json");
-Console.WriteLine("Hello, World!");
-TaskManager taskManager = new ();
-taskManager.AddTask("New task", false, TaskPriority.Medium, new List<string> { "work", "urgent" });
-taskManager.AddTask("Another task", true, TaskPriority.Low, new List<string> { "personal", "important" });
-taskManager.RemoveTask(1);
-Console.WriteLine(taskManager.GetTasks().Count);
-taskManager.AddTask("Clean kitchen", false, TaskPriority.Medium, new List<string> { "home", "daily" });
-foreach (var task in taskManager.GetTasks())
+namespace CLI_TaskManager;
+
+public class Program
 {
-    Console.WriteLine(task.Title);
+    public static void Main(string[] args)
+    {
+        var taskManager = new TaskManager();
+        var taskFileStorage = new TaskFileStorage("tasks.json");
+        
+        taskManager.LoadTasks(taskFileStorage.LoadTasks());
+
+        if (args.Length == 0)
+        {
+            ShowHelp();
+            return;
+        }
+        
+        string command = args[0].ToLower();
+
+        switch (command)
+        {
+            case "add":
+                AddTask(args, taskManager, taskFileStorage);
+                break;
+            default:
+                ShowHelp();
+                break;
+        }
+        
+        
+    }
+    
+    private static void ShowHelp()
+    {
+        Console.WriteLine("Dostępne komendy:");
+        Console.WriteLine("  task add \"tytuł zadania\"");
+        Console.WriteLine("  task list");
+        Console.WriteLine("  task done <id>");
+        Console.WriteLine("  task remove <id>");
+    }
+
+    private static void AddTask(string[] args, TaskManager taskManager, TaskFileStorage taskFileStorage)
+    {
+        if (args.Length < 2)
+        {
+            Console.WriteLine("Podaj tytuł zadania.");
+            return;
+        }
+        
+        string title = args[1];
+        taskManager.AddTask(title);
+        taskFileStorage.SaveTasks(taskManager.GetTasks());
+        Console.WriteLine($"Dodano zadanie: {title}");
+    }
 }
 
-var foundTasks = taskManager.FindTasksByTitle("kitchen");
-
-foreach (var task in foundTasks)
-{
-    Console.WriteLine(task.Id);
-}
-
-taskFileStorage.SaveTasks(taskManager.GetTasks());
-Console.WriteLine("Tasks saved to file.");

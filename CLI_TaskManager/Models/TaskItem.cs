@@ -1,11 +1,23 @@
 ﻿namespace CLI_TaskManager.Models;
 
-public class TaskItem(int id, string title, bool isDone, TaskPriority priority, List<string> tags, DateTime createdAt)
+public class TaskItem
 {
-    public int Id { get; set; } = id;
-    public string Title { get; set; } = title;
-    public bool IsDone { get; set; } = isDone;
-    public TaskPriority Priority { get; set; } = priority;
-    public List<string> Tags { get; set; } = tags;
-    public DateTime CreatedAt { get; set; } = createdAt;
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public bool IsDone { get; set; } = false;
+    public TaskPriority Priority { get; set; } = TaskPriority.Low;
+    public List<string> Tags { get; set; } = new();
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    public TaskItem() { }
+
+    public TaskItem(int id, string title, bool isDone = false, TaskPriority priority = TaskPriority.Low, List<string>? tags = null, DateTime? createdAt = null)
+    {
+        Id = id;
+        Title = title;
+        IsDone = isDone;
+        Priority = priority;
+        Tags = tags ?? new List<string>();
+        CreatedAt = createdAt ?? DateTime.Now;
+    }
 }

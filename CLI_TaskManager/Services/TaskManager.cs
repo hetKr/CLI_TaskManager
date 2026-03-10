@@ -1,4 +1,6 @@
-﻿namespace CLI_TaskManager.Services;
+﻿using System.Text.Json;
+
+namespace CLI_TaskManager.Services;
 using Models;
 
 
@@ -6,9 +8,9 @@ public class TaskManager
 {
     private readonly List<TaskItem> _tasks = new ();
     private int _nextId = 1;
-    public void AddTask(string title, bool isDone, TaskPriority priority, List<string> tags)
+    public void AddTask(string title, bool isDone = false, TaskPriority priority = TaskPriority.Low, List<string>? tags = null)
     {
-        var task = new TaskItem(_nextId++,title, isDone, priority, tags, DateTime.Now);
+        var task = new TaskItem(_nextId++, title, isDone, priority, tags);
         _tasks.Add(task);
     }
     public List<TaskItem> GetTasks() => _tasks;
@@ -19,5 +21,16 @@ public class TaskManager
         if (string.IsNullOrWhiteSpace(title)) return Enumerable.Empty<TaskItem>();
         return _tasks.Where(t => t.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
     }
+    public void LoadTasks(IEnumerable<TaskItem> tasks)
+    {
+        _tasks.Clear();
+        _tasks.AddRange(tasks);
+
+        _nextId = _tasks.Count == 0
+            ? 1
+            : _tasks.Max(t => t.Id) + 1;
+        
+    }
+
     
 }

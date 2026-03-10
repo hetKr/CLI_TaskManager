@@ -14,4 +14,22 @@ public sealed class TaskManagerTests
         Assert.AreEqual(1,taskManager.GetTasks().Count);
         
     }
+
+    [TestMethod]
+    public void AddTask_WithDefaultValues_ShouldSetCorrectDefaults()
+    {
+        // Arrange
+        var taskManager = new TaskManager();
+
+        // Act
+        taskManager.AddTask("Default Task");
+
+        // Assert
+        var task = taskManager.GetTasks().First();
+        Assert.AreEqual("Default Task", task.Title);
+        Assert.IsFalse(task.IsDone);
+        Assert.AreEqual(TaskPriority.Low, task.Priority);
+        Assert.IsNotNull(task.Tags);
+        Assert.AreEqual(0, task.Tags.Count);
+    }
 }
